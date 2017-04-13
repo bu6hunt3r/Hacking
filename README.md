@@ -156,7 +156,9 @@ We could also take advantage by the use of so called "universal gadgets"
 Last seven instructions will pop values to registers and then return. Main idea will be to call these instructions/gadgets and jump to the first four after all.
 So the ROP chain will look like this:
 
-1. Sequence 1:
+Sequence 1:
+| Instruction   | Expl                                                       |
+|---------------|------------------------------------------------------------|
 | pop rbx       | this register must be zero (it will be explained later on) |
 | pop rbp       | must be equal to one                                       |
 | pop r12       | address of instruction address                             |
