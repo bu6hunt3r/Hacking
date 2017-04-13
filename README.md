@@ -157,15 +157,15 @@ Last seven instructions will pop values to registers and then return. Main idea 
 So the ROP chain will look like this:
 
 Sequence 1:
-| Instruction | Expl |
-| ------------- | ---------------------------------------------------------- |
-| pop rbx | this register must be zero (it will be explained later on) |
-| pop rbp | must be equal to one |
-| pop r12 | address of instruction address |
-| pop r13 | how many bytes to read |
-| pop r14 | destination address of shellcode (e.g. .bss + 0x100) |
-| pop r15 | some garbage |
-| ret | put naxt garbage address |
+ Instruction | Expl |
+ ------------- | ---------------------------------------------------------- 
+ pop rbx | this register must be zero (it will be explained later on) 
+ pop rbp | must be equal to one 
+ pop r12 | address of instruction address 
+ pop r13 | how many bytes to read 
+ pop r14 | destination address of shellcode (e.g. .bss + 0x100) 
+ pop r15 | some garbage 
+ ret | put naxt garbage address 
 
 2. Sequence 2:
 
