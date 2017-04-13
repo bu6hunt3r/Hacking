@@ -158,7 +158,7 @@ So the ROP chain will look like this:
 
 Sequence 1:
 | Instruction   | Expl                                                       |
-|---------------|------------------------------------------------------------|
+| ------------- | ---------------------------------------------------------- |
 | pop rbx       | this register must be zero (it will be explained later on) |
 | pop rbp       | must be equal to one                                       |
 | pop r12       | address of instruction address                             |
