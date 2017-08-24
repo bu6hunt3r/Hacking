@@ -20,10 +20,26 @@ def modInv(a,m):
     return gmpy.invert(a,m)
 
 def CRT(ds, rs):
-    pass
-    
+    '''
+    Chinese Remainder Theorem
+    ds: array of dividers
+    rs: array of remainders
+    Return the number s such that s mod ds[i] = rs[i]
+    '''
+    length=len(ds)
+    assert len(rs)==length, "number of elements in remainder's array and in dividers must be equal"
+    p = i = prod = 1 
+    s = 0
+    for i in range(length): 
+        prod *= ds[i]
+    for i in range(length):
+        p = prod // ds[i]
+        s += rs[i] * modInv(p, ds[i]) * p
+    return s % prod
+
 def main():
     print egcd(5,3)
     print modInv(17,3)
+    print CRT([2,3,2],[3,4,5])   
 if __name__ == '__main__':
     main()
