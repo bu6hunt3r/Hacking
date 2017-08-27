@@ -3,7 +3,7 @@
 import gmpy
 import RSABase
 
-class Fermat(RSABase.RSABAse):
+class Fermat(RSABase.RSABase):
     def __init__(self, n, limit=10000):
         super(Fermat,self).__init__(n)
         self.limit=limit

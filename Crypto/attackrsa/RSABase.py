@@ -2,7 +2,7 @@
 
 import Utils
 
-class RSABAse(object):
+class RSABase(object):
     def __init__(self,n, e=3, d=None , p=None , q=None):
         self.n=n
         self.e=e

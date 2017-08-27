@@ -9,6 +9,6 @@ class ChosenCipher(object):
         self.c = c
     def mulFactor(self, f):
         return (self.c * pow(f, self.e, self.n))%(self.n)
-    def decrypt(self, f, newP):
+    def decrypt(self, f, P):
         inv = Utils.modInv(f, self.n)
-return (newP*inv)%(self.n)
+        return (newP*inv)%(self.n)
