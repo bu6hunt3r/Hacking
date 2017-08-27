@@ -4,6 +4,6 @@ setup(
         name="attackrsa",
         version='1.0',
         install_requires=['gmpy'],
-        packages="attackrsa"
+        packages=["attackrsa"],
         scripts=["/bin/attackrsa"]
 )
