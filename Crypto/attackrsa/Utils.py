@@ -38,8 +38,10 @@ def CRT(ds, rs):
     return s % prod
 
 def main():
+    ''' Some examples
     print egcd(5,3)
     print modInv(17,3)
     print CRT([2,3,2],[3,4,5])   
+    '''
 if __name__ == '__main__':
     main()

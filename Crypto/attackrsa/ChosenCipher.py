@@ -7,4 +7,3 @@ class ChosenCipher(object):
         self.n=n
         self.e=e
         self.c=c
-    
