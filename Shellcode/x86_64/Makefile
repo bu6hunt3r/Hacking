@@ -20,3 +20,6 @@ hex:
 .PHONY:
 list:
 	ls $(objects)
+
+clean:
+	ls | grep -vE "(.*\.asm|.*\.o|.*.txt|Make.*)" | xargs rm
