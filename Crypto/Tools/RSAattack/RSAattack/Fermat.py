@@ -2,7 +2,7 @@ from __future__ import print_function
 from RSAattack.Arithmetic import isqrt
 
 def fermat(n,verbose=True):
-    a=isrt(n)
+    a=isqrt(n)
     b2=a*a-n
     b=isqrt(n)
     count=0
