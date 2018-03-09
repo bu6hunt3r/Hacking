@@ -2,6 +2,11 @@
 
 import gmpy
 
+def gcd(a,b):
+	while b:
+		a, b = b, a%b
+	return b
+
 def egcd(a,b):
     u, u1 = 1, 0
     v, v1 = 0, 1
