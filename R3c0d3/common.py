@@ -56,11 +56,21 @@ class Instruction:
         return ("<{self.CODE} Instruction object(a={self.a}, b={self.b},),"
                 "amode={self.amode}, bmode={self.bmode}>".format(self=self))
 
+     #def execute(self, core):
+     #   raise NotImplemented
+
 class ADDInstruction(Instruction):
     CODE=b'ADD'
     def show_opcode(self):
         print "In show_opcode"
         return self.__repr__()
+
+    def execute(self, core):
+        aval=core.read(self.a, self.amode)
+        bval=core.read(self.b, self.bmode)
+        print "\033[1;31m aval={}, bval={}\033[0m".format(aval, bval)
+        core.write_b_field(self.b, aval+bval, self.bmode)
+
 
 class MOVInstruction(Instruction):
     CODE=b'MOV'
@@ -68,3 +78,36 @@ class MOVInstruction(Instruction):
         print "In show_opcode"
         return self.__repr__()
 
+    def execute(self, core):
+        val = core.read(self.a, self.amode)
+        core.write(self.b, val, self.bmode)
+
+class JMPInstruction(Instruction):
+    CODE=b'JMP'
+
+    def execute(self, core):
+        return core.read(self.a, self.amode)
+
+class CMPInstruction(Instruction):
+    CODE=b"CMP"
+
+    def execute(self, core):
+        aval=core.read(self.a, self.amode)
+        bval=core.read(self.b, self.bmode)
+        return 2 if aval == bval else 1
+
+class SLTInstruction(Instruction):
+    CODE=b"SLT"
+
+    def execute(self, core):
+        aval=core.read(self.a, self.amode)
+        bval=core.read(self.b, self.bmode)
+        return 2 if aval < bval else 1
+    
+class DATInstruction(Instruction):
+    CODE=b"DAT"
+
+    def execute(self, core):
+        raise DATException()
+
+INSTRUCTION_MAP = {i.CODE: i for i in (MOVInstruction, ADDInstruction, JMPInstruction, CMPInstruction, SLTInstruction, DATInstruction)}

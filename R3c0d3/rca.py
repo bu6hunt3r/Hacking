@@ -30,6 +30,8 @@ from parsimonious.nodes import NodeVisitor
 
 from common import Program, Instruction, ADDInstruction, MOVInstruction
 
+import os
+
 REDCODE_GRAMMAR=Grammar("""
     line = ws instruction? ws comment? ws
 
@@ -124,23 +126,21 @@ def redcode_compile(text):
     return out
 
 if __name__=="__main__":
-    
-    #with open("/tmp/test.rc","r") as f:
-        #text="""
-        #ADD #4, 3 
-        #ADD #47, 11 
-        #"""
-
-        #for line in text.splitlines():
-            #print CompilerVisitor(REDCODE_GRAMMAR, line).entry
-            #redcode_compile(text)
 
     import argparse
     parser=argparse.ArgumentParser(description="Redcode assembler")
-    parser.add_argument("infile", type=argparse.FileType("r"), help="Input file")
+    parser.add_argument("--infile", type=argparse.FileType("r"), help="Input file")
+    parser.add_argument("--outfile", type=argparse.FileType("wb"), help="Output file")
 
     args=parser.parse_args()
+
+    assert args.infile.name.endswith(".rc")
+
+    if not args.outfile:
+        #args.outfile=open(args.infile.it(".",1)[0]+".rco","wb")
+        args.outfile=open(os.path.basename(args.infile.name).split(".")[0]+".rco","wb")
+
     program=redcode_compile(args.infile.read())
     print repr(program.to_bytecode())
-
-    #print type(program)
+    args.outfile.write(program.to_bytecode())
+    args.outfile.close()
