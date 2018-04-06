@@ -1,7 +1,7 @@
 """
 Redcode assembler
 
-http://vyznev.net/corewar/guide.html#start_imp
+see http://vyznev.net/corewar/guide.html
 
 DAT -- data (kills the process)
 MOV -- move (copies data from one address to another)
@@ -25,31 +25,30 @@ NOP -- no operation (does nothing)
 """
 
 import parsimonious
-from parsimonious.grammar import Grammar
 from parsimonious.nodes import NodeVisitor
 
-from common import Program, Instruction, ADDInstruction, MOVInstruction
+from common2 import (Program, Instruction,
+    MOVInstruction, ADDInstruction, JMPInstruction,
+    CMPInstruction, SLTInstruction, DATInstruction
+)
 
-import os
 
-REDCODE_GRAMMAR=Grammar("""
+REDCODE_GRAMMAR = parsimonious.Grammar("""
     line = ws instruction? ws comment? ws
 
     comment = ";" ~".*"
 
     sep = ws "," ws
-
-    ws = " "*
+    ws = ~"\\s*"
 
     instruction = MOV / ADD / JMP / CMP / SLT / DAT
 
     MOV = "MOV" ws param sep param
     ADD = "ADD" ws param sep param
-    add = "add" ws param sep param
     JMP = "JMP" ws param
-    CMP = "CMP" ws param sep param 
-    SLT = "SLT" ws param sep param 
-    DAT = "DAT" ws param sep param 
+    CMP = "CMP" ws param sep param
+    SLT = "SLT" ws param sep param
+    DAT = "DAT" ws param sep param
 
     param = direct / immediate / b_indirect
 
@@ -58,89 +57,85 @@ REDCODE_GRAMMAR=Grammar("""
     b_indirect = "@" number
 
     number = ~"-?[0-9]+"
-    """)
+""")
+
 
 class CompilerVisitor(NodeVisitor):
-    
-    grammar=REDCODE_GRAMMAR
+    grammar = REDCODE_GRAMMAR
 
-    #def __init__(self, grammar, text):
-    #    self.entry={}
-    #    ast=Grammar(grammar).parse(text)
-    #    self.visit(ast)
-        #print ast
+    def visit_line(self, n, vc):
+        return vc[1]
 
-    def visit_ADD(self, n, vc):
-        #self.entry['ADD']=n.text
-        #print vc
-        _, _, a, _, b = vc
-        #print "a[1] = {}, b[1] = {} a[0] = {} b[0] = {}".format(a[1], b[1], a[0], b[0])
-        return ADDInstruction(a=a[1],b=b[1], amode=a[0], bmode=b[0])
-    
     def visit_MOV(self, n, vc):
         _, _, a, _, b = vc
-        return MOVInstruction(a=a[1],b=b[1], amode=a[0], bmode=b[0])
+        return MOVInstruction(a=a[1], b=b[1], amode=a[0], bmode=b[0])
 
-    def visit_immediate(self, n, vc):
-        return ('#', int(vc[1]))
+    def visit_JMP(self, n, vc):
+        _, _, a = vc
+        return JMPInstruction(a=a[1], b=0, amode=a[0], bmode='$')
 
-    def visit_direct(self, n, vc):
-        return ('$', int(vc[1]))
+    def visit_ADD(self, n, vc):
+        _, _, a, _, b = vc
+        return ADDInstruction(a=a[1], b=b[1], amode=a[0], bmode=b[0])
 
-    def visit_b_indirect(self, n, vc):
-        return ('@', int(vc[1]))
+    def visit_CMP(self, n, vc):
+        _, _, a, _, b = vc
+        return CMPInstruction(a=a[1], b=b[1], amode=a[0], bmode=b[0])
 
-    def visit_param(self, n, vc):
-        #print n.children
-        return vc[0]
+    def visit_SLT(self, n, vc):
+        _, _, a, _, b = vc
+        return SLTInstruction(a=a[1], b=b[1], amode=a[0], bmode=b[0])
+
+    def visit_DAT(self, n, vc):
+        _, _, a, _, b = vc
+        return DATInstruction(a=a[1], b=b[1], amode=a[0], bmode=b[0])
 
     def visit_number(self, n, vc):
-        #print "In visit number"
-        #print n.text
         return int(n.text)
 
-    def generic_visit(self, n, vc):
-        return vc or n
+    def visit_direct(self, n, vc):
+        return ('$', vc[-1])
 
-    def visit_instruction(slef, n, vc):
+    def visit_immediate(self, n, vc):
+        return ('#', vc[1])
+
+    def visit_b_indirect(self, n, vc):
+        return ('@', vc[1])
+
+    def visit_param(self, n, vc):
+        return vc[0]
+
+    def visit_instruction(self, n, vc):
         return vc[0]
 
     def visit_(self, n, vc):
         return vc[0] if vc else None
 
-    def visit_line(self, n, vc):
-        return vc[1]
-        
-        #return vc[0] if vc else None
+    def generic_visit(self, n, vc):
+        return vc or n  # should semantically be a tuple
+
 
 def redcode_compile(text):
-    visitor=CompilerVisitor()
-    out=Program()
-    #visitor=CompilerVisitor(REDCODE_GRAMMAR, text)
+    visitor = CompilerVisitor()
+    out = Program()
     for line in text.splitlines():
-        #print line
-        #line=visitor.visit_line(REDCODE_GRAMMAR.parse(line))
-        line=visitor.visit(REDCODE_GRAMMAR.parse(line))
+        line = visitor.visit(REDCODE_GRAMMAR.parse(line))
         if line:
             out.append(line)
     return out
 
-if __name__=="__main__":
 
+if __name__ == '__main__':
     import argparse
-    parser=argparse.ArgumentParser(description="Redcode assembler")
-    parser.add_argument("--infile", type=argparse.FileType("r"), help="Input file")
-    parser.add_argument("--outfile", type=argparse.FileType("wb"), help="Output file")
-
-    args=parser.parse_args()
-
-    assert args.infile.name.endswith(".rc")
-
+    parser = argparse.ArgumentParser(description='Redcode assembler.')
+    parser.add_argument('infile', type=argparse.FileType('r'),
+                        help='Input file')
+    parser.add_argument('-o', '--outfile', type=argparse.FileType('wb'),
+                        help='Output file')
+    args = parser.parse_args()
+    assert args.infile.name.endswith('.rc')
     if not args.outfile:
-        #args.outfile=open(args.infile.it(".",1)[0]+".rco","wb")
-        args.outfile=open(os.path.basename(args.infile.name).split(".")[0]+".rco","wb")
-
-    program=redcode_compile(args.infile.read())
-    print repr(program.to_bytecode())
+        args.outfile = open(args.infile.name.rsplit('.', 1)[0] + '.rco', 'wb')
+    program = redcode_compile(args.infile.read())
     args.outfile.write(program.to_bytecode())
     args.outfile.close()
