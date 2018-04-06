@@ -27,7 +27,7 @@ NOP -- no operation (does nothing)
 import parsimonious
 from parsimonious.nodes import NodeVisitor
 
-from common2 import (Program, Instruction,
+from common import (Program, Instruction,
     MOVInstruction, ADDInstruction, JMPInstruction,
     CMPInstruction, SLTInstruction, DATInstruction
 )
