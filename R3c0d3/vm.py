@@ -118,6 +118,7 @@ class GridArray:
         assert is_square(size)
         self.rows, self.cols = int(size**0.5), int(size**0.5)
         print "rows: {}, cols: {}".format(self.rows,self.cols)
+        d
         
 if __name__ == '__main__':
     import argparse
