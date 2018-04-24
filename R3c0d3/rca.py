@@ -28,7 +28,14 @@ import parsimonious
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import NodeVisitor
 
+<<<<<<< HEAD
 from common import Program, Instruction, ADDInstruction, MOVInstruction
+=======
+from common import (Program, Instruction,
+    MOVInstruction, ADDInstruction, JMPInstruction,
+    CMPInstruction, SLTInstruction, DATInstruction
+)
+>>>>>>> 333c9e1497c63852c4f2b76d3e7ee0dcb5457b43
 
 import os
 
