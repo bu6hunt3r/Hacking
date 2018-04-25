@@ -35,12 +35,12 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
     
     switch(opcode) {
         case 0x4d4f5600:
-            snprintf(op->buf_asm, R_ASM_BUFSIZE, "MOV %c%d, %c%d", mode_f, mode_s, f_op, s_op);
+            snprintf(op->buf_asm, R_ASM_BUFSIZE, "MOV %c%d, %c%d", mode_f,  f_op, mode_s, s_op);
             op->size=14;
             return 14;
 
         case 0x44415400:
-            snprintf(op->buf_asm, R_ASM_BUFSIZE, "DAT %c%d, %c%d", mode_f, mode_s, f_op, s_op);
+            snprintf(op->buf_asm, R_ASM_BUFSIZE, "DAT %c%d, %c%d", mode_f, f_op, mode_s, s_op);
             op->size=14;
             return 14;
     };
