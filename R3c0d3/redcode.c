@@ -20,7 +20,8 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
     f_op_s[2]=buf[6];
     f_op_s[3]=buf[7];
 
-    ut32 f_op=*(ut32*)f_op_s;
+    //ut32 f_op=*(ut32*)f_op_s;
+    signed int f_op=*(signed int*)f_op_s;
 
     ut8 s_op_s[4];
     s_op_s[0]=buf[8];
@@ -28,27 +29,45 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
     s_op_s[2]=buf[10];
     s_op_s[3]=buf[11];
 
-    ut32 s_op=*(ut32*)s_op_s;
+    //ut32 s_op=*(ut32*)s_op_s;
+    signed int s_op=*(signed int*)s_op_s;
 
     ut8 mode_f = buf[12];
     ut8 mode_s = buf[13];
     
     switch(opcode) {
+        // MOV
         case 0x4d4f5600:
-<<<<<<< HEAD
-            snprintf(op->buf_asm, R_ASM_BUFSIZE, "MOV %c%u, %c%u", mode_f, f_op, mode_s, s_op);
-=======
-            snprintf(op->buf_asm, R_ASM_BUFSIZE, "MOV %c%d, %c%d", mode_f,  f_op, mode_s, s_op);
->>>>>>> dced1729be60361e21ce8b72de57b715d08a5d3c
+            snprintf(op->buf_asm, R_ASM_BUFSIZE, "MOV %c%d, %c%d", mode_f, f_op, mode_s, s_op);
+            op->size=14;
+            return 14;
+        // DAT
+        case 0x44415400:
+            snprintf(op->buf_asm, R_ASM_BUFSIZE, "DAT %c%d, %c%d", mode_f, f_op, mode_s, s_op);
+            op->size=14;
+            return 14;
+        
+        // ADD
+        case 0x41444400:
+            snprintf(op->buf_asm, R_ASM_BUFSIZE, "ADD %c%d, %c%d", mode_f, f_op, mode_s, s_op);
             op->size=14;
             return 14;
 
-        case 0x44415400:
-<<<<<<< HEAD
-            snprintf(op->buf_asm, R_ASM_BUFSIZE, "DAT %c%u, %c%u", mode_f, f_op, mode_s, s_op);
-=======
-            snprintf(op->buf_asm, R_ASM_BUFSIZE, "DAT %c%d, %c%d", mode_f, f_op, mode_s, s_op);
->>>>>>> dced1729be60361e21ce8b72de57b715d08a5d3c
+        // CMP 
+        case 0x434d5000:
+            snprintf(op->buf_asm, R_ASM_BUFSIZE, "CMP %c%d, %c%d", mode_f, f_op, mode_s, s_op);
+            op->size=14;
+            return 14;
+
+        // SLT 
+        case 0x534c5400:
+            snprintf(op->buf_asm, R_ASM_BUFSIZE, "SLT %c%d, %c%d", mode_f, f_op, mode_s, s_op);
+            op->size=14;
+            return 14;
+
+        // JMP 
+        case 0x4a4d5000:
+            snprintf(op->buf_asm, R_ASM_BUFSIZE, "JMP %c%d", mode_f, f_op);
             op->size=14;
             return 14;
     };
