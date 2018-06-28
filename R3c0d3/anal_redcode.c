@@ -27,6 +27,20 @@
 // Direct mode
 #define DIR_MODE 0x24
 
+static int set_reg_profile(RAnal *anal)  {
+    const char *p = 
+        "=A0  eax\n"
+        "=PC  eip\n";
+    return r_reg_set_profile_string(anal->reg, p);
+}
+
+static const struct {
+  char *name;
+} regs[] = {
+{"eax"},
+{ "eip" }
+};
+
 static int redcode_anal_op(RAnal *anal, RAnalOp *op, ut32 addr, const ut8 *data, int len) {
     ut8 big_end[4];
     big_end[0]=data[3];
@@ -74,19 +88,22 @@ static int redcode_anal_op(RAnal *anal, RAnalOp *op, ut32 addr, const ut8 *data,
     r_strbuf_init(&op->esil);
 
     // Some "scratch" registers
-    ut32 acc=0x0;    
+    ut32 eax=0x0;    
 
     switch(op_index) {
         case Redcode_OP_ADD:
             switch(mode_f) {
                 case IMM_MODE:
                     if(mode_s==IMM_MODE) {
-                        acc=f_op+s_op;
+                        eax=f_op+s_op;
                         op->type = R_ANAL_OP_TYPE_ADD;
-                        r_strbuf_setf(&op->esil,"%x,%x,=[4]",data[4],acc);
-                        break;
+                        r_strbuf_setf(&op->esil,"%x,%x,=[4]",data[4],eax);
                     }
+                    break;
+                    
             }
+            break;
+
         case Redcode_OP_DAT:
             // Declare DAT as illegal instruction regardless of operands
             op->type=R_ANAL_OP_TYPE_ILL;
@@ -111,6 +128,7 @@ RAnalPlugin r_anal_plugin_redcode = {
     .bits = 32,
     .esil = true,
     .op = &redcode_anal_op,
+    .set_reg_profile = &set_reg_profile,
     .esil_init = esil_redcode_init,
     .esil_fini= esil_redcode_fini,
 };
