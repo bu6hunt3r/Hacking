@@ -1,9 +1,21 @@
-OBJ_REDCODE = anal_redcode.o
+NAME=anal_redcode
+R2_PLUGIN_PATH=$(shell r2 -hh|grep LIBR_PLUGINS|awk '{print $$2}')
+CFLAGS=-g -fPIC $(shell pkg-config --cflags r_anal)
+LDFLAGS=-shared $(shell pkg-config --libs r_anal)
+OBJS=$(NAME).o
+SO_EXT=$(shell uname|grep -q Darwin && echo dylib || echo so)
+LIB=$(NAME).$(SO_EXT)
 
-STATIC_OBJ+=(OBJ_REDCODE)
-TARGET_REDCODE=anal_redcode.$(EXT_SO)
+all: $(LIB)
 
-ALL_TARGETS+=$(TARGET_REDCODE
+clean:
+	rm -f $(LIB) $(OBJS)
 
-$(TARGET_REDCODE): $(OBJ_REDCODE)
-	$(CC) $(call libname,anal_redcode) ${LDFLAGS} ${CFLAGS} -o anal_redcode.$(EXT_SO) $(OBJ_REDCODE)
+$(LIB): $(OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) -o $(LIB)
+
+install:
+	cp -f anal_redcode.$(SO_EXT) $(R2_PLUGIN_PATH)
+
+uninstall:
+	rm -f $(R2_PLUGIN_PATH)/anal_redcode.$(SO_EXT)

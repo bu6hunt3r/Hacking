@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <r_types.h>
 #include <r_lib.h>
 #include <r_asm.h>
@@ -61,7 +62,7 @@ static int redcode_anal_op(RAnal *anal, RAnalOp *op, ut32 addr, const ut8 *data,
 
     op->id = op_index;
     op->addr = addr;
-    op->size = 4;
+    op->size = 12;
     op->nopcode = 1;
     op->jump = -1;
     op->fail = -1;
@@ -73,17 +74,23 @@ static int redcode_anal_op(RAnal *anal, RAnalOp *op, ut32 addr, const ut8 *data,
     r_strbuf_init(&op->esil);
 
     // Some "scratch" registers
+    ut32 acc=0x0;    
 
     switch(op_index) {
         case Redcode_OP_ADD:
             switch(mode_f) {
                 case IMM_MODE:
                     if(mode_s==IMM_MODE) {
+                        acc=f_op+s_op;
                         op->type = R_ANAL_OP_TYPE_ADD;
-                        r_strbuf_setf("%x,%x,=[4]",f_op,s_op);
+                        r_strbuf_setf(&op->esil,"%x,%x,=[4]",data[4],acc);
+                        break;
                     }
             }
-
+        case Redcode_OP_DAT:
+            // Declare DAT as illegal instruction regardless of operands
+            op->type=R_ANAL_OP_TYPE_ILL;
+            break;
     }
 }
 
