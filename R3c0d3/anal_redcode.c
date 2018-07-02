@@ -30,8 +30,9 @@
 static int set_reg_profile(RAnal *anal)  {
     const char *p = 
         "=A0  eax\n"
+        "=A1  ebx\n"
         "=PC  eip\n"
-        "gpr eax .32 0 0\n gpr eip .32 14 0\n";
+        "gpr eax .32 0 0\n gpr ebx .32 4 0\n gpr eip .32 14 0\n";
     return r_reg_set_profile_string(anal->reg, p);
 }
 
@@ -39,6 +40,7 @@ static const struct {
   char *name;
 } regs[] = {
 {"eax"},
+{"ebx"},
 {"eip"}
 };
 
@@ -94,17 +96,24 @@ static int redcode_anal_op(RAnal *anal, RAnalOp *op, ut32 addr, const ut8 *data,
 
     // Some "scratch" registers
     ut32 eax=0x0;
+    ut32 ebx=0x0;
+    ut32 eip=0x0;
     char *eax_reg = regs[eax].name;
+    char *ebx_reg = regs[ebx].name;
+    char *eip_reg = regs[eip].name;
 
     switch(op_index) {
+        eax=register_value(eax_reg, anal);
+        ebx=register_value(eax_reg, anal);
         case Redcode_OP_ADD:
-            eax=register_value(eax_reg, anal);
             switch(mode_f) {
                 case IMM_MODE:
                     if(mode_s==IMM_MODE) {
+                        eip=addr;
                         eax=f_op+s_op;
+                        ebx=f_op+eip;
                         op->type = R_ANAL_OP_TYPE_ADD;
-                        r_strbuf_setf(&op->esil,"%d,%x,=[4],", eax, f_op);
+                        r_strbuf_setf(&op->esil,"%d,%d,=[4],", eax, ebx);
                     }
                     break;
                     
