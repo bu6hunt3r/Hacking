@@ -1,6 +1,6 @@
 from copy import copy
 
-from rca import redcode_compile
+from rca2 import redcode_compile
 from common import Program, Instruction, DATInstruction, DATException
 import random
 import struct
@@ -118,12 +118,7 @@ class GridArray:
         assert is_square(size)
         self.rows, self.cols = int(size**0.5), int(size**0.5)
         print "rows: {}, cols: {}".format(self.rows,self.cols)
-<<<<<<< HEAD
-        d
-        
-=======
 
->>>>>>> 333c9e1497c63852c4f2b76d3e7ee0dcb5457b43
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Corewar VM.')
